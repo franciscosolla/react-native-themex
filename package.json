@@ -1,0 +1,40 @@
+{
+  "name": "react-native-theme",
+  "version": "1.0.0",
+  "description": "A simple and effective implementation to manage themes on react native apps",
+  "main": "index.ts",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/franciscosolla/react-native-theme.git"
+  },
+  "keywords": [
+    "react",
+    "react native",
+    "react-native-theme",
+    "theme",
+    "themes",
+    "color scheme",
+    "dark mode",
+    "night mode"
+  ],
+  "author": "Francisco Ignacio Fontoura Solla",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/franciscosolla/react-native-theme/issues"
+  },
+  "homepage": "https://github.com/franciscosolla/react-native-theme#readme",
+  "dependencies": {
+    "@react-native-community/async-storage": "^1.11.0",
+    "@types/react-native": "^0.63.2",
+    "react": "^16.13.1",
+    "react-native": "^0.63.2",
+    "react-native-navigation-bar-color": "^2.0.1",
+    "rxjs": "^6.6.0"
+  },
+  "devDependencies": {
+    "@types/react": "^16.9.43"
+  }
+}
