@@ -6,7 +6,7 @@ export function useStyles<T extends Theme, S extends StyleSheet.NamedStyles<S> |
 
     const theme = useTheme() as T
     
-    const styles = useMemo(() => StyleSheet.create(styleFactory(theme)), [theme, styleFactory])
+    const styles = useMemo(() => StyleSheet.create(styleFactory(theme)), [theme])
 
     return { styles, theme }
 }

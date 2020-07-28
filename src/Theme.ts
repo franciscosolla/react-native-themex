@@ -43,51 +43,63 @@ const colorSchemeToThemeName = function(){
     })
 }()
 
-export function registerTheme<T extends Theme>(theme: T, colorScheme?: 'light' | 'dark') {
-    
-    Themes[theme.name] = theme
+export function registerThemes<T extends Theme>( ...themes: ([T, 'light' | 'dark' | 'default' | undefined | null] | T)[] ) {
 
-    if (!colorSchemeToThemeName.default) {
-        colorSchemeToThemeName.default = theme.name
-        colorSchemeToThemeName.light = theme.name
-        colorSchemeToThemeName.dark = theme.name
-        setTHEME_NAME(theme.name)
-        addColorSchemeListener(colorScheme => setTHEME_NAME(colorSchemeToThemeName[colorScheme]!))
-        Appearance.addChangeListener(({ colorScheme }) => {
-            if (getColorScheme() === 'system') {
-                if (colorScheme && colorSchemeToThemeName[colorScheme] !== THEME_NAME.value) setTHEME_NAME(colorSchemeToThemeName[colorScheme]!)
-                else if (colorSchemeToThemeName.default !== THEME_NAME.value) setTHEME_NAME(colorSchemeToThemeName.default!)
+    if (!themes.length) throw new Error('react-native-theme: you have to register at least one theme')
+
+    themes.forEach((themeInfo) => {
+        
+        let theme: T, colorScheme: 'light' | 'dark' | 'default' | undefined | null
+        
+        if (themeInfo instanceof Array) [theme, colorScheme] = themeInfo
+        else theme = themeInfo
+        
+        Themes[theme.name] = theme
+        if (colorScheme) colorSchemeToThemeName[colorScheme] = theme.name
+        if (!THEME_NAME.value) setTHEME_NAME(theme.name, { save: false, shouldChangeNavigationBarColor: false })
+    })
+
+    if (!colorSchemeToThemeName.default) colorSchemeToThemeName.default = themes[0][0].name
+    if (!colorSchemeToThemeName.light) colorSchemeToThemeName.light = themes[0][0].name
+    if (!colorSchemeToThemeName.dark) colorSchemeToThemeName.dark = themes[0][0].name
+
+    if (!THEME_NAME.value || THEME_NAME.value === themes[0][0].name) {
+
+        AsyncStorage.getItem('react-native-theme/theme-name').then(themeName => {
+            if (themeName && Themes[themeName] && themeName !== THEME_NAME.value) {
+                setTHEME_NAME(themeName, { save: false })
+                return false
+            }
+            else return true
+        }).then(shouldChangeNavigationBarColor => {
+            if (themes[0][0].androidNavigationBarColor && shouldChangeNavigationBarColor) {
+                changeNavigationBarColor(
+                    themes[0][0].androidNavigationBarColor,
+                    themes[0][0].androidNavigationBarColorScheme === 'light' ? true : false,
+                    false
+                )
             }
         })
-        if (theme.androidNavigationBarColor) changeNavigationBarColor(theme.androidNavigationBarColor, theme.androidNavigationBarColorScheme === 'light' ? true : false, false)
     }
-    else if (colorScheme) {
-        colorSchemeToThemeName[colorScheme] = theme.name
-        const currentColorScheme = getColorScheme()
-        if (currentColorScheme === colorScheme || (currentColorScheme === 'system' && colorSchemeToThemeName.system === theme.name)) {
-            setTHEME_NAME(theme.name)
-        } 
-    }
+}
 
+export function theme<T extends Theme>(theme: T, colorScheme?: 'light' | 'dark' | 'default'): [T, 'light' | 'dark' | 'default' | undefined | null] {
+    return [theme, colorScheme]
 }
 
 const THEME_NAME = new BehaviorSubject<string|undefined>(undefined)
 
-AsyncStorage.getItem('react-native-theme/theme-name').then(themeName => {
-    if (themeName && Themes[themeName] && themeName !== THEME_NAME.value) setTHEME_NAME(themeName, { save: false })
-})
-
-function setTHEME_NAME(themeName: string, { save = true, changeNavigationBarColorAnimated = false } = {}) {
+function setTHEME_NAME(themeName: string, { save = true, changeNavigationBarColorAnimated = false, shouldChangeNavigationBarColor = true } = {}) {
     if (!Themes[themeName]) throw new Error(`react-native-theme: trying to set a theme that wasn't registered: "${themeName}"`)
+    if (save) AsyncStorage.setItem('react-native-theme/theme-name', themeName)
     if (themeName !== THEME_NAME.value) {
-        if (save) AsyncStorage.setItem('react-native-theme/theme-name', themeName)
         THEME_NAME.next(themeName)
         const theme = Themes[themeName]
-        if (theme.androidNavigationBarColor) changeNavigationBarColor(theme.androidNavigationBarColor, theme.androidNavigationBarColorScheme === 'light' ? true : false, changeNavigationBarColorAnimated)
+        if (theme.androidNavigationBarColor && shouldChangeNavigationBarColor) changeNavigationBarColor(theme.androidNavigationBarColor, theme.androidNavigationBarColorScheme === 'light' ? true : false, changeNavigationBarColorAnimated)
     }
 }
 
-export function useTheme<T extends Theme>() {
+export function useTheme<T extends Theme = Theme>() {
     
     const [themeName, setThemeName] = useState(THEME_NAME.value)
 
@@ -100,11 +112,44 @@ export function useTheme<T extends Theme>() {
     else return Themes[themeName] as T
 }
 
-export function getTheme<T extends Theme>(): T {
+export function getTheme<T extends Theme = Theme>(): T {
     if (!THEME_NAME.value) throw new Error('react-native-theme: you have to register at least one theme')
     else return Themes[THEME_NAME.value] as T
 }
 
 export function setTheme(themeName: string) {
     setTHEME_NAME(themeName, { changeNavigationBarColorAnimated: true })
+}
+
+export function getThemes<T extends Theme = Theme>() {
+    return Object.freeze({ ...Themes }) as { [k: string]: T }
+}
+
+const LOADING = new BehaviorSubject(!THEME_NAME.value)
+
+const loadingSubscription = THEME_NAME.subscribe(themeName => {
+    LOADING.next(!themeName)
+    if (themeName) loadingSubscription.unsubscribe()
+    LOADING.complete()
+})
+
+export function isLoading() {
+    return LOADING.value
+}
+
+export function useThemeLoading() {
+
+    const [isLoading, setIsLoading] = useState(LOADING.value)
+
+    useEffect(() => {
+        const subscription = LOADING.subscribe(loading => {
+            setIsLoading(loading)
+            if (!loading) subscription.unsubscribe()
+        })
+        return () => {
+            if (!subscription.closed) subscription.unsubscribe()
+        }
+    }, [])
+
+    return isLoading
 }
