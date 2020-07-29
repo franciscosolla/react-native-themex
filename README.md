@@ -142,7 +142,7 @@ function MyComponent() {
 }
 ```
 
-## `:brain:` Type Defining Themes
+## :brain: Type Defining Themes
 
 Themex works without it, but if you're in a **typescript** React Native project, **you should type define your themes** so you can use auto-complete when writing your styles. 
 
@@ -163,7 +163,7 @@ const theme = useTheme<typeof theme1>()
 
 Write a extension file for Themex inside your project and import it instead of importing directly from Themex. This way you won't need to define your theme type each time you call a Themex feature.
 
-This will provide you with definetly typed themes and also give you a extra layer between Themex and your project making it easier to detach from Themex if you ever decide to (I hope you don't `:smile:`.
+This will provide you with definetly typed themes and also give you a extra layer between Themex and your project making it easier to detach from Themex if you ever decide to (I hope you don't :smile:.
 
 ```typescript
 // file: Themes/index.ts
