@@ -26,8 +26,8 @@ export interface Theme {
     [key: string]: any
 }
 
-export interface ThemeCollection {
-    [key: string]: Theme
+export interface ThemeCollection<T extends Theme = Theme> {
+    [key: string]: T
 }
 
 const Themes: ThemeCollection = {}
@@ -135,7 +135,7 @@ export function setTheme(themeName: string) {
 }
 
 export function getThemes<T extends Theme = Theme>() {
-    return Object.freeze({ ...Themes }) as { [k: string]: T }
+    return Object.freeze({ ...Themes }) as ThemeCollection<T>
 }
 
 const LOADING = new BehaviorSubject(!THEME_NAME.value)
@@ -146,7 +146,7 @@ const loadingSubscription = THEME_NAME.subscribe(themeName => {
     LOADING.complete()
 })
 
-export function isLoading() {
+export function themeIsLoading() {
     return LOADING.value
 }
 
