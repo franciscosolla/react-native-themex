@@ -1,9 +1,23 @@
 import { useState, useEffect } from 'react'
 import { BehaviorSubject } from "rxjs"
 import { Appearance } from 'react-native'
-import changeNavigationBarColor from 'react-native-navigation-bar-color'
 
 import AsyncStorage from '@react-native-community/async-storage'
+
+
+function changeNavigationBarColor(color: string, light: boolean, animated: boolean): void {
+    try {
+        require('react-native-navigation-bar-color').default(color, light, animated)
+    }
+    catch(e) {
+        if (e.code === "MODULE_NOT_FOUND" || e.name === "MODULE_NOT_FOUND")
+            console.warn('react-native-themex: the "react-native-navigation-bar-color" has to be installed and configured to be able to change the android navigation bar color')
+        else
+            throw e;
+    }
+}
+
+
 
 export interface Theme {
     name: string
