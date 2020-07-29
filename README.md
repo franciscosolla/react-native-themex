@@ -1,5 +1,6 @@
 ![npm](https://img.shields.io/npm/v/react-native-themex) ![GitHub](https://img.shields.io/github/license/franciscosolla/react-native-themex) ![GitHub repo size](https://img.shields.io/github/repo-size/franciscosolla/react-native-themex)
- <h1 align="center">ThemeX</h1>
+
+<h1 align="center">ThemeX</h1>
 
 Reactive theme manager for React Native.
 
@@ -140,6 +141,71 @@ function MyComponent() {
 	)
 }
 ```
+
+## `:brain:` Type Defining Themes
+
+Themex works without it, but if you're in a **typescript** React Native project, **you should type define your themes** so you can use auto-complete when writing your styles. 
+
+Themex is completely written in typescript and generic defined. So you can call any of it's functions with your theme type.
+
+```typescript
+const theme1 = {
+	name: 'theme1',
+	colors: {
+		primary: '#000000'
+	}
+}
+
+const theme = useTheme<typeof theme1>()
+```
+
+###  Tip
+
+Write a extension file for Themex inside your project and import it instead of importing directly from Themex. This way you won't need to define your theme type each time you call a Themex feature.
+
+This will provide you with definetly typed themes and also give you a extra layer between Themex and your project making it easier to detach from Themex if you ever decide to (I hope you don't `:smile:`.
+
+```typescript
+// file: Themes/index.ts
+
+import { StyleSheet } from 'react-native'
+
+import * as Themes from 'react-native-themex'
+export * from 'react-native-themex' // export all Themex features
+
+// import your theme objects
+import  *  as  themes  from  './themes'
+
+// export your specific theme type
+export type Theme = Themes.Theme & typeof themes[keyof  typeof  themes]
+
+// register your themes
+Themes.registerThemes<Theme>(
+	[themes.lightTheme, 'light'],
+	[themes.darkTheme, 'dark']
+)
+
+// Override Themex features to type define it with your theme type
+
+export function  useTheme() {
+	return  Themes.useTheme<Theme>()
+}
+
+export function setTheme(themeName: Theme['name']) {
+	return  Themes.setTheme(themeName)
+}
+
+export function useStyles<S  extends  StyleSheet.NamedStyles<S> | StyleSheet.NamedStyles<any>>(styleFactory: (theme: Theme) =>  S | StyleSheet.NamedStyles<S>) {
+	return  Themes.useStyles(styleFactory)
+}
+
+export function getThemes() {
+	return  Themes.getThemes<Theme>()
+}
+```
+
+And now you can call any of the functions you overrided and have the auto-magical-completions typescript provides. Just remember to import from your project file, `import { useTheme } from './Themes'`.
+:mage_man::sparkles:
 
 ## :notebook: API
 
