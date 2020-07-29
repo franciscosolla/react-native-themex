@@ -5,7 +5,7 @@
   "scripts": {
     "test": "jest"
   },
-  "repository": "github:franciscosolla/react-native-theme",
+  "repository": "github:franciscosolla/react-native-themex",
   "keywords": [
     "react",
     "react native",
@@ -19,9 +19,9 @@
   "author": "Francisco Ignacio Fontoura Solla <francisco.solla@gmail.com> (https://github.com/franciscosolla)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/franciscosolla/react-native-theme/issues"
+    "url": "https://github.com/franciscosolla/react-native-themex/issues"
   },
-  "homepage": "https://github.com/franciscosolla/react-native-theme#readme",
+  "homepage": "https://github.com/franciscosolla/react-native-themex#readme",
   "dependencies": {
 
   },
