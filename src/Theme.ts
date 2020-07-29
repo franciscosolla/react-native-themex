@@ -3,7 +3,6 @@ import { BehaviorSubject } from "rxjs"
 import { Appearance } from 'react-native'
 import changeNavigationBarColor from 'react-native-navigation-bar-color'
 
-import { addColorSchemeListener, getColorScheme } from './ColorScheme'
 import AsyncStorage from '@react-native-community/async-storage'
 
 export interface Theme {

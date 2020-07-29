@@ -13,6 +13,10 @@ export const ColorScheme = ColorSchemes.reduce(<T extends ColorScheme>(o: any, t
 
 const COLOR_SCHEME = new BehaviorSubject<ColorScheme>(ColorScheme.system)
 
+AsyncStorage.getItem('@react-native-theme/color-scheme').then(colorScheme => {
+    if (colorScheme && ColorScheme[colorScheme]) setCOLOR_SCHEME(colorScheme as ColorScheme, false) 
+})
+
 function setCOLOR_SCHEME(colorScheme: ColorScheme, save: boolean = true) {
     if (COLOR_SCHEME.value !== colorScheme) {
         if (save) AsyncStorage.setItem('@react-native-theme/color-scheme', colorScheme)

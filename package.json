@@ -1,6 +1,6 @@
 {
   "name": "react-native-themex",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "A simple and effective implementation to manage themes on react native apps",
   "scripts": {
     "test": "jest"
